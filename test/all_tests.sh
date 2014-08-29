@@ -1,7 +1,12 @@
+rm -f *.dat
+rm -rf binaries
+rm -f *.xml
+rm -f *.fmu
+rm -f *_FMI.*
 filenames="
-/home/nutarojj/Code/openmodelica/trunk/testsuite/openmodelica/fmi/ModelExchange/HelloFMIWorld.mo
 Test1.mo
 Linsys.mo
+Linsys2.mo
 "
 for f in $filenames;
 do
