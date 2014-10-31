@@ -30,7 +30,7 @@ case "$arch" in
     linux64)
 	g++ -Wall -g -c -fPIC -I../../FMI_for_ModelExchange_and_CoSimulation_v2.0 -o sfmi_runtime.o ../runtime/sfmi_runtime.cpp
 	g++ -Wall -g -c -fPIC -I../../FMI_for_ModelExchange_and_CoSimulation_v2.0 -I../runtime -o ${modelFile}_FMI.o ${modelFile}_FMI.cpp
-	g++ -shared -Wl,-soname,${modelFile}.so -o ${modelFile}.so sfmi_runtime.o ${modelFile}_FMI.o 
+	g++ -shared -Wl,-soname,${modelFile}.so -o ${modelFile}.so sfmi_runtime.o ${modelFile}_FMI.o -llapack 
 	;;
     *)
 	echo "$0: Do not know about arch $arch"
