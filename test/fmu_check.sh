@@ -14,8 +14,13 @@ esac
 rm -rf binaries
 rm -f *.fmu
 rm -f a.out
-export OPENMODELICALIBRARY="${HOME}/Code/openmodelica/trunk/libraries/Modelica 3.2.1":${HOME}/Code/SOEP/modelica-buildings
-fmucheck="${HOME}/Code/SOEP/FMUChecker-2.0b3/build/fmuCheck"
+
+# Jim' s paths
+#export OPENMODELICALIBRARY="${HOME}/Code/openmodelica/trunk/libraries/Modelica 3.2.1":${HOME}/Code/SOEP/modelica-buildings
+#fmucheck="${HOME}/Code/SOEP/FMUChecker-2.0b3/build/fmuCheck"
+
+export OPENMODELICALIBRARY="${HOME}/Documents/openmodelica/libraries/Modelica 3.2.1":${HOME}/Desktop/modelica-buildings
+fmucheck="${HOME}/Desktop/FMUChecker-2.0b3/fmuCheck"
 omc +s +simCodeTarget=sfmi $1 Modelica Buildings ModelicaReference ModelicaServices
 modelFile=$(exec basename $1 | sed 's/\.mo//')
 # Generating the .cpp files.
@@ -28,7 +33,7 @@ case "$arch" in
 	c++ -dynamiclib -g -I/opt/openmodelica/include -I../FMI_for_ModelExchange_and_CoSimulation_v2.0 -o sfmi_runtime.o -I../runtime -o ${modelFile}.${sharedLibrarySuffix} ${modelFile}_FMI.cpp ../runtime/sfmi_runtime.cpp
 	;;
     linux64)
-	g++ -Wall -g -c -fPIC -I../../FMI_for_ModelExchange_and_CoSimulation_v2.0 -o sfmi_runtime.o ../runtime/sfmi_runtime.cpp
+	g++ -Wall -g -c -fPIC -I../../FMI_for_ModelExchange_and_CoSimulation_v2.0 -o sfmi_runtime.o ../runtime/sfmi_runtime.cpp 
 	g++ -Wall -g -c -fPIC -I../../FMI_for_ModelExchange_and_CoSimulation_v2.0 -I../runtime -o ${modelFile}_FMI.o ${modelFile}_FMI.cpp
 	g++ -shared -Wl,-soname,${modelFile}.so -o ${modelFile}.so sfmi_runtime.o ${modelFile}_FMI.o -llapack 
 	;;
@@ -44,5 +49,5 @@ mv ${modelFile}.${sharedLibrarySuffix} binaries/${arch}
 zip -r ${modelFile}.fmu modelDescription.xml binaries
 # Run the FMU Checker.
 ${fmucheck}.${arch} -l 5 -f ${modelFile}.fmu > ${modelFile}.dat
-g++ -Wall ${modelFile}_check.cpp 
+g++ -Wall ${modelFile}_check.cpp
 ./a.out
