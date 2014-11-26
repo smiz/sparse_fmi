@@ -10,21 +10,23 @@ case "`uname -s`" in
      	      sharedLibrarySuffix=so;;
 esac     
 
-# Cleaning
+# Cleanup from prior test
 rm -rf binaries
-rm -f *.fmu
+rm -f ${modelFile}.fmu 
+rm -f modelDescription.xml 
 rm -f a.out
-
+rm -f ${modelFile}.dat
 # Jim' s paths
-#export OPENMODELICALIBRARY="${HOME}/Code/openmodelica/trunk/libraries/Modelica 3.2.1":${HOME}/Code/SOEP/modelica-buildings
-#fmucheck="${HOME}/Code/SOEP/FMUChecker-2.0b3/build/fmuCheck"
+export OPENMODELICALIBRARY="${HOME}/Code/openmodelica/trunk/libraries/Modelica 3.2.1":${HOME}/Code/SOEP/modelica-buildings
+fmucheck="${HOME}/Code/SOEP/FMUChecker-2.0b3/build/fmuCheck"
+# Ozgur's paths
+#export OPENMODELICALIBRARY="${HOME}/Documents/openmodelica/libraries/Modelica 3.2.1":${HOME}/Desktop/modelica-buildings
+#fmucheck="${HOME}/Desktop/FMUChecker-2.0b3/fmuCheck"
 
-export OPENMODELICALIBRARY="${HOME}/Documents/openmodelica/libraries/Modelica 3.2.1":${HOME}/Desktop/modelica-buildings
-fmucheck="${HOME}/Desktop/FMUChecker-2.0b3/fmuCheck"
-omc +s +simCodeTarget=sfmi $1 Modelica Buildings ModelicaReference ModelicaServices
-modelFile=$(exec basename $1 | sed 's/\.mo//')
+# Compile and execute test
 # Generating the .cpp files.
-omc +s +simCodeTarget=sfmi $1 Modelica
+#omc +s +simCodeTarget=sfmi +tearingMethod=noTearing $1 Modelica Buildings ModelicaReference ModelicaServices
+#omc +s +simCodeTarget=sfmi $1 Modelica
 modelFile=$(exec basename $1 | sed 's/\.mo//')
 
 # Compile.
@@ -42,12 +44,13 @@ case "$arch" in
 	exit -2
 esac
 
+
 # Create the FMU.
 mkdir binaries
 mkdir binaries/${arch}
 mv ${modelFile}.${sharedLibrarySuffix} binaries/${arch}
 zip -r ${modelFile}.fmu modelDescription.xml binaries
 # Run the FMU Checker.
-${fmucheck}.${arch} -l 5 -f ${modelFile}.fmu > ${modelFile}.dat
+${fmucheck}.${arch} -h 0.001 -l 5 -f ${modelFile}.fmu > ${modelFile}.dat
 g++ -Wall ${modelFile}_check.cpp
 ./a.out
