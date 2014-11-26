@@ -26,7 +26,7 @@ fmucheck="${HOME}/Code/SOEP/FMUChecker-2.0b3/build/fmuCheck"
 # Compile and execute test
 # Generating the .cpp files.
 #omc +s +simCodeTarget=sfmi +tearingMethod=noTearing $1 Modelica Buildings ModelicaReference ModelicaServices
-#omc +s +simCodeTarget=sfmi $1 Modelica
+omc +s +simCodeTarget=sfmi $1 Modelica
 modelFile=$(exec basename $1 | sed 's/\.mo//')
 
 # Compile.
